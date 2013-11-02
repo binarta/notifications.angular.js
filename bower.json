@@ -1,5 +1,5 @@
 {
-    "name": "notifications.angular.js",
+    "name": "binarta.notifications.angular",
     "version": "0.0.0",
     "main": "./src/main/js/notifications.js",
     "dependencies": {
