@@ -1,0 +1,80 @@
+angular.module('notifications', ['notifications.presenter'])
+    .factory('topicRegistry',function () {
+        return new TopicRegistry();
+    }).factory('topicMessageDispatcher', function (topicRegistry) {
+        return new TopicMessageDispatcher(topicRegistry);
+    })
+    .directive('notifications', ['topicRegistry', 'notificationPresenter', 'i18nResolver', NotificationsDirectiveFactory]);
+
+function TopicRegistry() {
+    var self = this;
+    this.topics = {};
+
+    var unknown = function (topic) {
+        return !self.topics[topic];
+    };
+
+    var create = function (topic) {
+        self.topics[topic] = {listeners:[]};
+    };
+
+    var register = function (topic, listener) {
+        self.topics[topic].listeners.push(listener);
+        if(self.topics[topic].persistentMessage) listener(self.topics[topic].persistentMessage);
+    };
+
+    this.subscribe = function (topic, listener) {
+        if (unknown(topic)) create(topic);
+        register(topic, listener)
+    };
+
+    this.persistentMessage = function(topic, msg) {
+        if(unknown(topic)) create(topic);
+        self.topics[topic].persistentMessage = msg;
+    }
+}
+
+function TopicMessageDispatcher(registry) {
+    var listeners = function (topic) {
+        var topic = registry.topics[topic];
+        return topic ? topic.listeners : [];
+    };
+
+    this.fire = function (topic, msg) {
+        if (listeners(topic)) listeners(topic).forEach(function (listener) {
+            listener(msg);
+        });
+    };
+
+    this.firePersistently = function(topic, msg) {
+        registry.persistentMessage(topic, msg);
+        this.fire(topic, msg);
+    }
+}
+
+function NotificationsDirectiveFactory(topicRegistry, notificationPresenter, i18nResolver) {
+    return {
+        restrict: 'C',
+        link: function () {
+            topicRegistry.subscribe('system.alert', function (status) {
+                notificationPresenter({
+                    type: 'error',
+                    title: 'action failed!',
+                    text: 'The system received an unexpected message and has stopped processing. Please try again later. [' + status + ']'
+                });
+            });
+            ['success','warning', 'info'].forEach(function(level) {
+                topicRegistry.subscribe('system.' + level, function(ctx) {
+                    ctx.striptags = true;
+                    i18nResolver(ctx, function(msg) {
+                        notificationPresenter({
+                            type: level,
+                            text:msg
+                        })
+                    })
+                });
+            });
+        }
+    };
+}
+
