@@ -1,18 +1,20 @@
 {
-    "name": "binarta.notifications.angular",
-    "version": "0.0.0",
-    "main": "./src/main/js/notifications.js",
-    "dependencies": {
-        "angular": "1.0.7"
-    },
-    "devDependencies": {
-        "angular-mocks": "1.0.7"
-    },
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ]
+  "name": "binarta.notifications.angular",
+  "main": "./src/main/js/notifications.js",
+  "dependencies": {
+    "angular": "1.2.5"
+  },
+  "devDependencies": {
+    "angular-mocks": "1.2.5"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "resolutions": {
+    "angular": "1.2.5"
+  }
 }
