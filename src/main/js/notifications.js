@@ -23,6 +23,11 @@ function TopicRegistry() {
         if(self.topics[topic].persistentMessage) listener(self.topics[topic].persistentMessage);
     };
 
+    var unregister = function (topic, listener) {
+        var listeners = self.topics[topic].listeners;
+        listeners.splice(listeners.indexOf(listener),1);
+    };
+
     this.subscribe = function (topic, listener) {
         if (unknown(topic)) create(topic);
         register(topic, listener)
@@ -31,7 +36,11 @@ function TopicRegistry() {
     this.persistentMessage = function(topic, msg) {
         if(unknown(topic)) create(topic);
         self.topics[topic].persistentMessage = msg;
-    }
+    };
+
+    this.unsubscribe = function (topic, listener) {
+        if(!unknown(topic)) unregister(topic, listener)
+    };
 }
 
 function TopicMessageDispatcher(registry) {

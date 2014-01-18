@@ -74,6 +74,20 @@ describe('notifications', function () {
             registry.subscribe('topic', listener);
             expect(receivedMsg).toEqual('msg');
         });
+
+        it('unsubscribe a topic listener', function () {
+            var receivedMsg;
+            var listener = function (msg) {
+                receivedMsg = msg;
+            };
+
+            registry.subscribe('topic', listener);
+            registry.unsubscribe('topic', listener);
+            dispatcher.fire('topic', 'msg');
+
+            expect(receivedMsg).toBeUndefined();
+        });
+
     });
 
     describe('notifications directive', function () {
