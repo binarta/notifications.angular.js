@@ -123,6 +123,7 @@ describe('notifications', function () {
                 i18n.presenter('msg');
                 expect(notifications.lastReceived.type).toEqual(level);
                 expect(notifications.lastReceived.text).toEqual('msg');
+                expect(notifications.lastReceived.persistent).toEqual(false);
             });
 
             it('system ' + level + ' messages are translated', function() {
@@ -130,6 +131,13 @@ describe('notifications', function () {
                 topicRegistry['system.' + level]({code:'msg.code'});
                 expect(i18n.ctx.code).toEqual('msg.code');
                 expect(i18n.ctx.striptags).toEqual(true);
+            });
+
+            it('system ' + level + ' messages can be persistent', function() {
+                directive.link();
+                topicRegistry['system.' + level]({persistent:true});
+                i18n.presenter('msg');
+                expect(notifications.lastReceived.persistent).toEqual(true);
             });
         });
 

@@ -15,17 +15,17 @@ function TopicRegistry() {
     };
 
     var create = function (topic) {
-        self.topics[topic] = {listeners:[]};
+        self.topics[topic] = {listeners: []};
     };
 
     var register = function (topic, listener) {
         self.topics[topic].listeners.push(listener);
-        if(self.topics[topic].persistentMessage) listener(self.topics[topic].persistentMessage);
+        if (self.topics[topic].persistentMessage) listener(self.topics[topic].persistentMessage);
     };
 
     var unregister = function (topic, listener) {
         var listeners = self.topics[topic].listeners;
-        listeners.splice(listeners.indexOf(listener),1);
+        listeners.splice(listeners.indexOf(listener), 1);
     };
 
     this.subscribe = function (topic, listener) {
@@ -33,13 +33,13 @@ function TopicRegistry() {
         register(topic, listener)
     };
 
-    this.persistentMessage = function(topic, msg) {
-        if(unknown(topic)) create(topic);
+    this.persistentMessage = function (topic, msg) {
+        if (unknown(topic)) create(topic);
         self.topics[topic].persistentMessage = msg;
     };
 
     this.unsubscribe = function (topic, listener) {
-        if(!unknown(topic)) unregister(topic, listener)
+        if (!unknown(topic)) unregister(topic, listener)
     };
 }
 
@@ -55,7 +55,7 @@ function TopicMessageDispatcher(registry) {
         });
     };
 
-    this.firePersistently = function(topic, msg) {
+    this.firePersistently = function (topic, msg) {
         registry.persistentMessage(topic, msg);
         this.fire(topic, msg);
     }
@@ -72,13 +72,14 @@ function NotificationsDirectiveFactory(topicRegistry, notificationPresenter, i18
                     text: 'The system received an unexpected message and has stopped processing. Please try again later. [' + status + ']'
                 });
             });
-            ['success','warning', 'info'].forEach(function(level) {
-                topicRegistry.subscribe('system.' + level, function(ctx) {
+            ['success', 'warning', 'info'].forEach(function (level) {
+                topicRegistry.subscribe('system.' + level, function (ctx) {
                     ctx.striptags = true;
-                    i18nResolver(ctx, function(msg) {
+                    i18nResolver(ctx, function (msg) {
                         notificationPresenter({
                             type: level,
-                            text:msg
+                            text: msg,
+                            persistent: ctx.persistent == undefined ? false : ctx.persistent
                         })
                     })
                 });
