@@ -3,8 +3,17 @@ angular.module('notifications', ['notifications.presenter'])
         return new TopicRegistry();
     }).factory('topicMessageDispatcher', function (topicRegistry) {
         return new TopicMessageDispatcher(topicRegistry);
-    })
+    }).factory('ngRegisterTopicHandler', ['topicRegistry', NGRegisterTopicHandlerFactory])
     .directive('notifications', ['topicRegistry', 'notificationPresenter', 'i18nResolver', NotificationsDirectiveFactory]);
+
+function NGRegisterTopicHandlerFactory(topicRegistry) {
+    return function(scope, topic, handler) {
+        scope.$on('$destroy', function() {
+            topicRegistry.unsubscribe(topic, handler);
+        });
+        topicRegistry.subscribe(topic, handler);
+    }
+}
 
 function TopicRegistry() {
     var self = this;

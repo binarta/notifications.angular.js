@@ -4,7 +4,7 @@ describe('notifications', function () {
     beforeEach(module('notifications'));
     beforeEach(inject(function (topicRegistry, topicMessageDispatcher) {
         i18n = {
-            resolver:function(ctx, presenter) {
+            resolver: function (ctx, presenter) {
                 i18n.ctx = ctx;
                 i18n.presenter = presenter;
             }
@@ -65,7 +65,7 @@ describe('notifications', function () {
             expect(receivedMsg2).toEqual('msg-2');
         });
 
-        it('persistent messages are delivered to late subscribers', function() {
+        it('persistent messages are delivered to late subscribers', function () {
             var receivedMsg;
             var listener = function (msg) {
                 receivedMsg = msg;
@@ -116,8 +116,8 @@ describe('notifications', function () {
             });
         });
 
-        ['success', 'warning', 'info'].forEach(function(level) {
-            it('system ' + level + ' messages raise notifications', function() {
+        ['success', 'warning', 'info'].forEach(function (level) {
+            it('system ' + level + ' messages raise notifications', function () {
                 directive.link();
                 topicRegistry['system.' + level]({});
                 i18n.presenter('msg');
@@ -126,20 +126,52 @@ describe('notifications', function () {
                 expect(notifications.lastReceived.persistent).toEqual(false);
             });
 
-            it('system ' + level + ' messages are translated', function() {
+            it('system ' + level + ' messages are translated', function () {
                 directive.link();
-                topicRegistry['system.' + level]({code:'msg.code'});
+                topicRegistry['system.' + level]({code: 'msg.code'});
                 expect(i18n.ctx.code).toEqual('msg.code');
                 expect(i18n.ctx.striptags).toEqual(true);
             });
 
-            it('system ' + level + ' messages can be persistent', function() {
+            it('system ' + level + ' messages can be persistent', function () {
                 directive.link();
-                topicRegistry['system.' + level]({persistent:true});
+                topicRegistry['system.' + level]({persistent: true});
                 i18n.presenter('msg');
                 expect(notifications.lastReceived.persistent).toEqual(true);
             });
         });
+    });
 
+    describe('subscribing for notification during the lifecycle of an angular scope', function () {
+        var scope, receivedMessage;
+
+        beforeEach(inject(function (ngRegisterTopicHandler) {
+            receivedMessage = undefined;
+            scope = {
+                $on: function (topic, handler) {
+                    scope[topic + 'Handlers'].push(handler);
+                },
+                $destroyHandlers: [],
+                $destroy: function () {
+                    scope.$destroyHandlers.forEach(function (it) {
+                        it();
+                    });
+                }
+            };
+            ngRegisterTopicHandler(scope, 'test.topic', function (it) {
+                receivedMessage = it
+            });
+        }));
+
+        it('should receive messages', function () {
+            dispatcher.fire('test.topic', 'msg');
+            expect(receivedMessage).toEqual('msg');
+        });
+
+        it('should unsubscribe when scope dies', function () {
+            scope.$destroy();
+            dispatcher.fire('test.topic', 'msg');
+            expect(receivedMessage).toBeUndefined();
+        });
     });
 });
