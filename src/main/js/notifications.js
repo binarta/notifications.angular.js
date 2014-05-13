@@ -8,10 +8,28 @@ angular.module('notifications', ['notifications.presenter'])
 
 function NGRegisterTopicHandlerFactory(topicRegistry) {
     return function(scope, topic, handler) {
-        scope.$on('$destroy', function() {
-            topicRegistry.unsubscribe(topic, handler);
-        });
-        topicRegistry.subscribe(topic, handler);
+        var subscribe = function (scope, topic, handler) {
+            scope.$on('$destroy', function() {
+                topicRegistry.unsubscribe(topic, handler);
+            });
+            topicRegistry.subscribe(topic, handler);
+        };
+
+        var subscribeOnce = function (scope, topic, handler) {
+            var callback = function (msg) {
+                topicRegistry.unsubscribe(topic, callback);
+                handler(msg);
+            };
+            topicRegistry.subscribe(topic, callback);
+        };
+
+        if (!topic) {
+            var args = scope;
+            if (args.executeHandlerOnce) subscribeOnce(args.scope, args.topic, args.handler);
+            else subscribe(args.scope, args.topic, args.handler);
+        } else {
+            subscribe(scope, topic, handler);
+        }
     }
 }
 
@@ -96,4 +114,3 @@ function NotificationsDirectiveFactory(topicRegistry, notificationPresenter, i18
         }
     };
 }
-

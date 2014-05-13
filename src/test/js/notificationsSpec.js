@@ -145,7 +145,7 @@ describe('notifications', function () {
     describe('subscribing for notification during the lifecycle of an angular scope', function () {
         var scope, receivedMessage;
 
-        beforeEach(inject(function (ngRegisterTopicHandler) {
+        beforeEach(function () {
             receivedMessage = undefined;
             scope = {
                 $on: function (topic, handler) {
@@ -158,20 +158,72 @@ describe('notifications', function () {
                     });
                 }
             };
-            ngRegisterTopicHandler(scope, 'test.topic', function (it) {
-                receivedMessage = it
-            });
-        }));
-
-        it('should receive messages', function () {
-            dispatcher.fire('test.topic', 'msg');
-            expect(receivedMessage).toEqual('msg');
         });
 
-        it('should unsubscribe when scope dies', function () {
-            scope.$destroy();
-            dispatcher.fire('test.topic', 'msg');
-            expect(receivedMessage).toBeUndefined();
+        var assert = function () {
+            it('should receive messages', function () {
+                dispatcher.fire('test.topic', 'msg');
+                expect(receivedMessage).toEqual('msg');
+            });
+
+            it('should continue to receive messages', function () {
+                dispatcher.fire('test.topic', 'msg1');
+                expect(receivedMessage).toEqual('msg1');
+
+                dispatcher.fire('test.topic', 'msg2');
+                expect(receivedMessage).toEqual('msg2');
+            });
+
+            it('should unsubscribe when scope dies', function () {
+                scope.$destroy();
+                dispatcher.fire('test.topic', 'msg');
+                expect(receivedMessage).toBeUndefined();
+            });
+        };
+
+        describe('using separate arguments', function () {
+            beforeEach(inject(function (ngRegisterTopicHandler) {
+                ngRegisterTopicHandler(scope, 'test.topic', function (it) {
+                    receivedMessage = it
+                });
+            }));
+
+            assert();
+        });
+
+        describe('using hash as argument', function () {
+            describe('execute handler', function () {
+                beforeEach(inject(function (ngRegisterTopicHandler) {
+                    ngRegisterTopicHandler({
+                        scope: scope,
+                        topic: 'test.topic',
+                        handler: function (it) {
+                            receivedMessage = it
+                        }
+                    });
+                }));
+
+                assert();
+            });
+
+            describe('execute handler only once', function () {
+                beforeEach(inject(function (ngRegisterTopicHandler) {
+                    ngRegisterTopicHandler({
+                        scope: scope,
+                        topic: 'test.topic',
+                        handler: function (it) {
+                            receivedMessage = it
+                        },
+                        executeHandlerOnce: true
+                    });
+                }));
+
+                it('should receive messages only once', function () {
+                    dispatcher.firePersistently('test.topic', 'executed');
+                    dispatcher.firePersistently('test.topic', 'should not have been executed');
+                    expect(receivedMessage).toEqual('executed');
+                });
+            });
         });
     });
 });
