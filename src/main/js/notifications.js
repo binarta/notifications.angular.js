@@ -1,9 +1,9 @@
 angular.module('notifications', ['notifications.presenter'])
     .factory('topicRegistry',function () {
         return new TopicRegistry();
-    }).factory('topicMessageDispatcher', function (topicRegistry) {
+    }).factory('topicMessageDispatcher', ['topicRegistry', function (topicRegistry) {
         return new TopicMessageDispatcher(topicRegistry);
-    }).factory('ngRegisterTopicHandler', ['topicRegistry', NGRegisterTopicHandlerFactory])
+    }]).factory('ngRegisterTopicHandler', ['topicRegistry', NGRegisterTopicHandlerFactory])
     .directive('notifications', ['topicRegistry', 'notificationPresenter', 'i18nResolver', NotificationsDirectiveFactory]);
 
 function NGRegisterTopicHandlerFactory(topicRegistry) {
