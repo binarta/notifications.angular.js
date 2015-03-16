@@ -1,4 +1,4 @@
-angular.module('notifications', ['notifications.presenter'])
+angular.module('notifications', ['notifications.presenter', 'i18n'])
     .factory('topicRegistry',function () {
         return new TopicRegistry();
     }).factory('topicMessageDispatcher', ['topicRegistry', function (topicRegistry) {

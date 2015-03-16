@@ -1,6 +1,8 @@
 describe('notifications', function () {
     var registry, dispatcher, directive, i18n;
 
+    angular.module('i18n', []);
+
     beforeEach(module('notifications'));
     beforeEach(inject(function (topicRegistry, topicMessageDispatcher) {
         i18n = {

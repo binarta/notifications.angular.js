@@ -1,4 +1,4 @@
-angular.module('notifications.presenter', [])
+angular.module('notifications.presenter', ['config'])
     .factory('notificationPresenter', ['config', function(config) {
         return function(ctx) {
             if(ctx.type == 'warning')
