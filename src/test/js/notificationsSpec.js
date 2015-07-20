@@ -211,19 +211,57 @@ describe('notifications', function () {
             describe('execute handler only once', function () {
                 beforeEach(inject(function (ngRegisterTopicHandler) {
                     ngRegisterTopicHandler({
-                        scope: scope,
                         topic: 'test.topic',
                         handler: function (it) {
                             receivedMessage = it
                         },
                         executeHandlerOnce: true
                     });
+
+                    dispatcher.firePersistently('test.topic', 'executed');
+                    dispatcher.firePersistently('test.topic', 'executed more than once');
                 }));
 
                 it('should receive messages only once', function () {
-                    dispatcher.firePersistently('test.topic', 'executed');
-                    dispatcher.firePersistently('test.topic', 'should not have been executed');
                     expect(receivedMessage).toEqual('executed');
+                });
+            });
+
+            describe('execute handler only once with other registered handlers', function () {
+                var receivedMsg1, receivedMsg2;
+
+                beforeEach(inject(function (ngRegisterTopicHandler) {
+                    ngRegisterTopicHandler({
+                        topic: 'test.topic',
+                        handler: function (it) {
+                            receivedMessage = it
+                        },
+                        executeHandlerOnce: true
+                    });
+
+                    ngRegisterTopicHandler({
+                        scope: scope,
+                        topic: 'test.topic',
+                        handler: function (msg) {
+                            receivedMsg1 = msg;
+                        }
+                    });
+
+                    ngRegisterTopicHandler({
+                        scope: scope,
+                        topic: 'test.topic',
+                        handler: function (msg) {
+                            receivedMsg2 = msg;
+                        }
+                    });
+
+                    dispatcher.firePersistently('test.topic', 'executed');
+                }));
+
+                it('should receive all messages', function () {
+                    expect(receivedMessage).toEqual('executed');
+                    expect(receivedMsg1).toEqual('executed');
+                    expect(receivedMsg2).toEqual('executed');
                 });
             });
         });

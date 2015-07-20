@@ -77,7 +77,7 @@ function TopicMessageDispatcher(registry) {
     };
 
     this.fire = function (topic, msg) {
-        if (listeners(topic)) listeners(topic).forEach(function (listener) {
+        if (listeners(topic)) angular.copy(listeners(topic)).forEach(function (listener) {
             listener(msg);
         });
     };
