@@ -6,10 +6,12 @@ angular.module('notifications.presenter', ['config'])
             if(ctx.persistent != undefined)
                 ctx.hide = !ctx.persistent;
 
-            ctx.nonblock = {
-                nonblock: true
-            };
             if(config.styling) ctx.styling = config.styling;
+
+            ctx.buttons = {
+                closer: true,
+                sticker: false
+            };
 
             $(function(){
                 new PNotify(ctx);
