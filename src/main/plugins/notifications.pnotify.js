@@ -1,12 +1,12 @@
 angular.module('notifications.presenter', ['config'])
-    .factory('notificationPresenter', ['config', function(config) {
+    .factory('notificationPresenter', function() {
         return function(ctx) {
             if(ctx.type == 'warning')
                 ctx.type = undefined;
             if(ctx.persistent != undefined)
                 ctx.hide = !ctx.persistent;
 
-            if(config.styling) ctx.styling = config.styling;
+            ctx.styling = 'fontawesome';
 
             ctx.buttons = {
                 closer: true,
@@ -17,4 +17,4 @@ angular.module('notifications.presenter', ['config'])
                 new PNotify(ctx);
             });
         }
-    }]);
+    });
