@@ -1,0 +1,8 @@
+{
+  "default": {
+    "notifications": "bower_components/binarta.notifications.angular/src/main/js/notifications.js",
+    "notifications.pnotify": "bower_components/binarta.notifications.angular/src/main/plugins/notifications.pnotify.js",
+    "pnotify.core": "bower_components/pnotify/src/pnotify.core.js",
+    "pnotify.buttons": "bower_components/pnotify/src/pnotify.buttons.js"
+  }
+}
