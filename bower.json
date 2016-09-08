@@ -8,7 +8,7 @@
   ],
   "dependencies": {
     "binarta.angularx": "0.*.*",
-    "binarta.i18n.angular": "1.*.*",
+    "binarta.i18n.angular": "2.*.*",
     "binarta.config.angular": "0.*.*",
     "pnotify": "2.1.0"
   },
