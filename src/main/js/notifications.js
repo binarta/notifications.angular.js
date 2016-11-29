@@ -52,7 +52,8 @@ function TopicRegistry() {
 
     var unregister = function (topic, listener) {
         var listeners = self.topics[topic].listeners;
-        listeners.splice(listeners.indexOf(listener), 1);
+        var index = listeners.indexOf(listener);
+        if (index != -1) listeners.splice(index, 1);
     };
 
     this.subscribe = function (topic, listener) {

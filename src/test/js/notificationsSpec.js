@@ -90,6 +90,18 @@ describe('notifications', function () {
             expect(receivedMsg).toBeUndefined();
         });
 
+        it('unsubscribe an unknown topic listener does not remove existing listeners', function () {
+            var receivedMsg;
+            var listener = function (msg) {
+                receivedMsg = msg;
+            };
+
+            registry.subscribe('topic', listener);
+            registry.unsubscribe('topic', function () {});
+            dispatcher.fire('topic', 'msg');
+
+            expect(receivedMsg).toEqual('msg');
+        });
     });
 
     describe('notifications directive', function () {
