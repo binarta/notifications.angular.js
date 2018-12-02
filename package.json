@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "test": "karma start config/karma10.conf.js --single-run",
+    "test:watch": "karma start config/karma10.conf.js",
+    "postinstall": "bower install"
+  },
   "devDependencies": {
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",
