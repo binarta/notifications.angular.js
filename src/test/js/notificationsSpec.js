@@ -102,6 +102,14 @@ describe('notifications', function () {
 
             expect(receivedMsg).toEqual('msg');
         });
+
+        it('can be unsubscribe by the result of the subscribe function', function() {
+            registry.subscribe('topic', function() {
+                fail();
+            })();
+
+            dispatcher.fire('topic');
+        });
     });
 
     describe('notifications directive', function () {

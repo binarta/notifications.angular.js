@@ -58,7 +58,10 @@ function TopicRegistry() {
 
     this.subscribe = function (topic, listener) {
         if (unknown(topic)) create(topic);
-        register(topic, listener)
+        register(topic, listener);
+        return function() {
+            self.unsubscribe(topic, listener);
+        }
     };
 
     this.persistentMessage = function (topic, msg) {
